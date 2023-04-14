@@ -160,11 +160,6 @@ int main() {
     calculate_statistics(completed_processes, n, &avg_turnaround_time, &avg_waiting_time, &avg_response_time); // Calculate statistics
     throughput = calculate_throughput(n, completed_processes[n - 1].completion_time - completed_processes[0].arrival_time); // Calculate throughput
 
-    printf("\nCalculated statistics for the processes during the run:\n");
-    printf("Average turnaround time: %.2f\n", avg_turnaround_time);
-    printf("Average waiting time: %.2f\n", avg_waiting_time);
-    printf("Average response time: %.2f\n", avg_response_time);
-
     printf("\nCalculated statistic for the algorithm for the run:\n");
     printf("Throughput: %.2f\n", throughput);
 
