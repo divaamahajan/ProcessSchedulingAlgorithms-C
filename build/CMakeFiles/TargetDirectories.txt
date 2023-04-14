@@ -1,0 +1,3 @@
+/home/divyamahajan/Documents/ProcessSchedulingAlgorithms-C/build/CMakeFiles/outDebug.dir
+/home/divyamahajan/Documents/ProcessSchedulingAlgorithms-C/build/CMakeFiles/edit_cache.dir
+/home/divyamahajan/Documents/ProcessSchedulingAlgorithms-C/build/CMakeFiles/rebuild_cache.dir
