@@ -83,33 +83,31 @@ void enqueue_sorted_burst_time(struct queue* q, struct process* processes, int i
     return;
 }
 
-// struct queue_node* create_queue_node(struct process p) {
-//     struct queue_node* new_node = (struct queue_node*) malloc(sizeof(struct queue_node));
-//     new_node->process = p;
-//     new_node->next = NULL;
-//     return new_node;
-// }
 
+// Function to add a process at the end of the queue
+void enqueue(struct queue* q, int idx) {
+    // Check if idx is valid
+    if (idx < 0) {
+        return;
+    }
+    // Create a new node
+    struct queue_node* new_node = (struct queue_node*) malloc(sizeof(struct queue_node));
+    new_node->idx = idx;
+    new_node->next = NULL;
+    // If queue is empty, add the process to the front
+    if (is_empty(q)) {
+        q->front = new_node;
+        q->rear = new_node;
+        q->size++;
+        return;
+    }
+    // Add the process to the rear
+    q->rear->next = new_node;
+    q->rear = new_node;
+    q->size++;
+    return;
+}
 
-// // Function to add a process at the end of the queue
-// void enqueue(struct queue* q, struct process p) {
-//     // Create a new node
-
-//     struct queue_node* new_node = create_queue_node(p);
-//     new_node->process = p;
-//     new_node->next = NULL;
-//     // If queue is empty, add the process to the front
-//     if (is_empty(q)) {
-//         q->front = new_node;
-//         q->rear = new_node;
-//         q->size++;
-//         return;
-//     }
-//     // Add the process to the rear
-//     q->rear->next = new_node;
-//     q->rear = new_node;
-//     q->size++;
-// }
 
 int dequeue(struct queue* q) {
     if (is_empty(q)) {

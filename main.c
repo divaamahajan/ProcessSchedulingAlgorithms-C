@@ -102,7 +102,11 @@ void calculate_statistics(struct process *processes, int n, scheduling_stats_tab
     float total_waiting_time = 0;
     float total_response_time = 0;
     float total_cpu_time = 0;
-
+    float avg_turnaround_time = 0.0;
+    float avg_waiting_time = 0.0;
+    float avg_response_time = 0.0;
+    float avg_throughput = 0.0;
+    
     for (int i = 0; i < n; i++) {
         processes[i].turnaround_time = processes[i].completion_time - processes[i].arrival_time;
         processes[i].waiting_time = processes[i].turnaround_time - processes[i].expected_burst_time;
@@ -114,10 +118,10 @@ void calculate_statistics(struct process *processes, int n, scheduling_stats_tab
         total_cpu_time += processes[i].expected_burst_time;
     }
 
-    float avg_turnaround_time = total_turnaround_time / n;
-    float avg_waiting_time = total_waiting_time / n;
-    float avg_response_time = total_response_time / n;
-    float avg_throughput = (float)n / total_cpu_time;
+    avg_turnaround_time = total_turnaround_time / n;
+    avg_waiting_time = total_waiting_time / n;
+    avg_response_time = total_response_time / n;
+    avg_throughput = (float)n / total_cpu_time;
 
     // table->stats[algorithm][round].avg_turnaround_time = avg_turnaround_time;
     // table->stats[algorithm][round].avg_waiting_time = avg_waiting_time;
@@ -144,9 +148,7 @@ void run_algorithm(const char* name, struct process processes[], int n, schedule
     // turnaround_time, and start_time of each process.
     // Calculate the round statistics based on the modified process data.
     
-    run_scheduler(processes, n);
-    printf("\n%d\n", processes[0].completion_time);
-    
+    run_scheduler(processes, n);    
 
     calculate_statistics(processes, n, &stats_table, algorithm, round);
 }

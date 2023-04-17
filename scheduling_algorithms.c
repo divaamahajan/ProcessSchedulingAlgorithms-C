@@ -5,10 +5,34 @@
 #include <time.h>
 #include "queues.c"
 
+void print_execution(int pid, int start_time, int end_time) {
+    char str[12]; // increase buffer size to 12
+    if (pid < 1) {
+        snprintf(str, sizeof(str), "-");
+    } else {
+        snprintf(str, sizeof(str), "P%d", pid);
+    }
+    for (int j = start_time; j < end_time; j++) {
+        printf("%s ", str);
+    }
+}
+
+// Function to calculate waiting time, turnaround time, response time, and completion time
+void calculate_times(struct process* p, int current_time) {
+    p->completion_time = current_time + p->expected_burst_time;
+    p->turnaround_time = p->completion_time - p->arrival_time;
+    p->waiting_time = p->turnaround_time - p->expected_burst_time;
+    p->response_time = p->start_time - p->arrival_time;
+}
 
 /* Comparison function for enqueue_sorted_burst_time, compares expected burst times of two processes. */
 int compare_expected_burst_time(struct process* processes, int idx1, struct process* p2, int idx2) {
     return processes[idx1].expected_burst_time - p2->expected_burst_time;
+}
+
+// Comparison function for sorting processes by priority
+int compare_priority(struct process* p1, struct process* p2) {
+    return p2->priority - p1->priority;
 }
 
 void run_fcfs(struct process *processes, int n) {
@@ -32,13 +56,12 @@ void run_sjf(struct process *processes, int n) {
     
     // Check if the first process has arrived
     if (processes[0].arrival_time > current_time){
-        printf("\nCPU idle from time %d to time %d\n", current_time, processes[0].arrival_time );
+        print_execution(0, current_time, processes[0].arrival_time );
         current_time = processes[0].arrival_time;
-        printf("\nCurrent Time : %d\n", current_time );
     }
 
     // Loop until all processes are completed
-    while (num_completed_processes < n) {            
+    while (num_completed_processes < n && current_time < 100) {            
         // Add any processes that have arrived to the ready queue
         for (int i = next_process_idx; i < n; i++) { 
             struct process p = processes[i];
@@ -50,8 +73,7 @@ void run_sjf(struct process *processes, int n) {
             if (!p.completion_time) {
                 // Insert the process in the ready queue in its correct position based on expected burst time  
                 if (p.expected_burst_time < 1){continue;}            
-                enqueue_sorted_burst_time(ready_queue, processes, i, compare_expected_burst_time);                    
-                // enqueue_sorted_burst_time(ready_queue, &processes[i], compare_expected_burst_time);
+                enqueue_sorted_burst_time(ready_queue, processes, i, compare_expected_burst_time);     
                 next_process_idx = i+1;
 
             }
@@ -59,17 +81,11 @@ void run_sjf(struct process *processes, int n) {
 
         // If the ready queue is empty, add the next process to the queue
         if (is_empty(ready_queue) && num_completed_processes < n) {
-            printf("\nCPU idle from time %d to time %d\n", current_time, processes[next_process_idx].arrival_time );
+            print_execution(0, current_time, processes[next_process_idx].arrival_time );
             enqueue_sorted_burst_time(ready_queue, processes, next_process_idx ,compare_expected_burst_time);
             current_time = processes[next_process_idx].arrival_time;
-            printf("\nCurrent Time : %d\n", current_time );
             next_process_idx++ ;
         }
-
-        printf("\nReady Queue ==> ");
-        print_queue(ready_queue, processes);
-
-
         // Get the process with the shortest expected burst time from the ready queue
         // struct process* current_process_ptr = dequeue(ready_queue);
         int current_idx = dequeue(ready_queue);
@@ -78,37 +94,20 @@ void run_sjf(struct process *processes, int n) {
         // Update the process's start time and completion time
         processes[current_idx].start_time = current_time;
         processes[current_idx].completion_time = current_time + processes[current_idx].expected_burst_time;
+        print_execution((int)processes[current_idx].id, (int)processes[current_idx].start_time , (int)processes[current_idx].completion_time);
 
-        printf("Executing Process P%d from time %d to time %d \n", (int)processes[current_idx].id, (int)processes[current_idx].start_time , (int)processes[current_idx].completion_time);
-    
         // Update waiting time, response time, and completion time
         processes[current_idx].waiting_time = current_time - processes[current_idx].arrival_time;
         processes[current_idx].response_time = processes[current_idx].start_time - processes[current_idx].arrival_time;
-        processes[current_idx].completion_time = current_time + processes[current_idx].expected_burst_time;
         processes[current_idx].turnaround_time = processes[current_idx].completion_time - processes[current_idx].arrival_time;
 
-        printf("| %7s | %7s | %5s | %8s | %8s | %8s | %10s |\n", "Arrival", "Wait", "Start", "Response", "RunTime", "Complete", "Turnaround");
-        printf("| %7d | %7d | %5d | %8d | %8d | %8d | %10d |\n",
-        processes[current_idx].arrival_time,
-        processes[current_idx].waiting_time,
-        processes[current_idx].start_time,
-        processes[current_idx].response_time,
-        processes[current_idx].expected_burst_time,
-        processes[current_idx].completion_time,
-        processes[current_idx].turnaround_time);
-
-        
         // Add current process to array of running processes
         num_completed_processes++;
-
         
         current_time = processes[current_idx].completion_time;
-        
-        printf("\nCurrent Time : %d\n", current_time );
-        
     }    
     // Free memory allocated for the queue
-    // free_queue(ready_queue);
+    free_queue(ready_queue);
 }
 
 
@@ -122,12 +121,101 @@ void run_rr(struct process *processes, int n) {
     // Code for RR
 }
 
-void run_hpf_np(struct process *processes, int n) {
+
+// Function to run the Non-preemptive Highest Priority First scheduling algorithm
+void run_hpf_np(struct process* processes, int n) {
     // Run the Non-preemptive Highest Priority First scheduling algorithm
     // Code for HPF Non-preemptive
+    // Creation of a queue of process indices
+    struct queue* process_queue_1 = create_queue();
+    struct queue* process_queue_2 = create_queue();
+    struct queue* process_queue_3 = create_queue();
+    struct queue* process_queue_4 = create_queue();
+    int current_time = 0;
+    int num_completed_processes = 0;
+    int next_process_idx = 0;
+
+    // Check if there are any processes to schedule
+    if (n == 0) {
+        printf("No processes to schedule.\n");
+        return;
+    }
+
+    // Loop until all processes are completed
+    while (num_completed_processes < n && current_time < 100) {
+        // Check for new arrivals
+        while (next_process_idx < n && processes[next_process_idx].arrival_time <= current_time) {
+            // Add the process index to the corresponding queue based on its priority
+            int process_idx = next_process_idx;
+            struct process* p = &processes[process_idx];
+            switch (p->priority) {
+                case 1:
+                    enqueue(process_queue_1, process_idx);
+                    break;
+                case 2:
+                    enqueue(process_queue_2, process_idx);
+                    break;
+                case 3:
+                    enqueue(process_queue_3, process_idx);
+                    break;
+                case 4:
+                    enqueue(process_queue_4, process_idx);
+                    break;
+                default:
+                    printf("Invalid priority for process %d.\n", p->id);
+            }
+            next_process_idx++;
+        }
+
+        // Select the process with the highest priority
+        struct process* p = NULL;
+        if (!is_empty(process_queue_1)) {
+            int process_idx = dequeue(process_queue_1);
+            p = &processes[process_idx];
+        } else if (!is_empty(process_queue_2)) {
+            int process_idx = dequeue(process_queue_2);
+            p = &processes[process_idx];
+        } else if (!is_empty(process_queue_3)) {
+            int process_idx = dequeue(process_queue_3);
+            p = &processes[process_idx];
+        } else if (!is_empty(process_queue_4)) {
+            int process_idx = dequeue(process_queue_4);
+            p = &processes[process_idx];
+        }
+
+        // If a process was selected, run it
+        if (p != NULL) {
+            // Set the start time of the process
+            p->start_time = current_time;
+
+            print_execution(p->id, p->start_time, current_time);
+            
+            // Calculate the waiting time, turnaround time, response time, and completion time of the process
+            calculate_times(p, current_time);
+
+            // Update the current time
+            current_time += p->expected_burst_time;
+
+            // Increment the number of completed processes
+            num_completed_processes++;
+        } else {
+            print_execution(0, current_time, current_time + 1);
+            // If no process was selected, increment the current time
+            current_time++;
+    }
+    
+    }
+// Free the memory used by the process queues
+free_queue(process_queue_1);
+free_queue(process_queue_2);
+free_queue(process_queue_3);
+free_queue(process_queue_4);
+
 }
+
 
 void run_hpf_p(struct process *processes, int n) {
     // Run the Preemptive Highest Priority First scheduling algorithm
     // Code for HPF Preemptive
+    
 }
