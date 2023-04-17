@@ -107,7 +107,6 @@ void run_sjf(struct process *processes, int n) {
         printf("\nCurrent Time : %d\n", current_time );
         
     }    
-    printf("Hellloooo -> %d",processes[0].completion_time);
     // Free memory allocated for the queue
     // free_queue(ready_queue);
 }
