@@ -119,96 +119,96 @@ void run_srt(struct process *processes, int n) {
 void run_rr(struct process *processes, int n) {
     // Run the Round Robin scheduling algorithm
     // Code for RR
-    // Create a queue for ready processes
-    struct queue* ready_queue = create_queue();
+    // // Create a queue for ready processes
+    // struct queue* ready_queue = create_queue();
 
-    // Define time quantum for Round Robin
-    int time_quantum = 4;
+    // // Define time quantum for Round Robin
+    // int time_quantum = 4;
 
-    // Initialize variables
-    int current_time = 0;
-    int next_process_idx = 0;
-    int num_completed_processes = 0;
+    // // Initialize variables
+    // int current_time = 0;
+    // int next_process_idx = 0;
+    // int num_completed_processes = 0;
 
-    // Check if there are any processes to schedule
-    if (n == 0) 
-    {
-        printf("No processes to schedule.\n");
-        return;
-    }
+    // // Check if there are any processes to schedule
+    // if (n == 0) 
+    // {
+    //     printf("No processes to schedule.\n");
+    //     return;
+    // }
 
-    // Check if the first process has arrived
-    if (processes[0].arrival_time > current_time) 
-    {
-        print_execution(0, current_time, processes[0].arrival_time);
-        current_time = processes[0].arrival_time;
-    }
+    // // Check if the first process has arrived
+    // if (processes[0].arrival_time > current_time) 
+    // {
+    //     print_execution(0, current_time, processes[0].arrival_time);
+    //     current_time = processes[0].arrival_time;
+    // }
 
-    // Loop until all processes are completed
-    while (num_completed_processes < n) 
-    {
-        // Add any processes that have arrived to the ready queue
-        for (int i = next_process_idx; i < n; i++) 
-        {
-            struct process p = processes[i];
-            if (p.arrival_time > current_time) 
-            {
-                next_process_idx = i;
-                break;
-            }
-            if (!p.completion_time) 
-            {
-                enqueue(ready_queue, i);
-                next_process_idx = i + 1;
-            }
-        }
+    // // Loop until all processes are completed
+    // while (num_completed_processes < n) 
+    // {
+    //     // Add any processes that have arrived to the ready queue
+    //     for (int i = next_process_idx; i < n; i++) 
+    //     {
+    //         struct process p = processes[i];
+    //         if (p.arrival_time > current_time) 
+    //         {
+    //             next_process_idx = i;
+    //             break;
+    //         }
+    //         if (!p.completion_time) 
+    //         {
+    //             enqueue(ready_queue, i);
+    //             next_process_idx = i + 1;
+    //         }
+    //     }
 
-        // If the ready queue is empty, add the next process to the queue
-        if (is_empty(ready_queue) && num_completed_processes < n) 
-        {
-            print_execution(0, current_time, processes[next_process_idx].arrival_time);
-            current_time = processes[next_process_idx].arrival_time;
-            enqueue(ready_queue, next_process_idx);
-            next_process_idx++;
-        }
+    //     // If the ready queue is empty, add the next process to the queue
+    //     if (is_empty(ready_queue) && num_completed_processes < n) 
+    //     {
+    //         print_execution(0, current_time, processes[next_process_idx].arrival_time);
+    //         current_time = processes[next_process_idx].arrival_time;
+    //         enqueue(ready_queue, next_process_idx);
+    //         next_process_idx++;
+    //     }
 
-        // Get the process at the front of the ready queue
-        int current_idx = dequeue(ready_queue);
-        struct process* current_process = &processes[current_idx];
+    //     // Get the process at the front of the ready queue
+    //     int current_idx = dequeue(ready_queue);
+    //     struct process* current_process = &processes[current_idx];
 
-        // Update start time if it's the first time this process has been scheduled
-        if (current_process->start_time == -1) 
-        {
-            current_process->start_time = current_time;
-        }
+    //     // Update start time if it's the first time this process has been scheduled
+    //     if (current_process->start_time == -1) 
+    //     {
+    //         current_process->start_time = current_time;
+    //     }
 
-        // Determine how much time the process will run for
-        int remaining_time = current_process->expected_burst_time - current_process->elapsed_time;
-        int run_time = (remaining_time > time_quantum) ? time_quantum : remaining_time;
+    //     // Determine how much time the process will run for
+    //     int remaining_time = current_process->expected_burst_time - current_process->elapsed_time;
+    //     int run_time = (remaining_time > time_quantum) ? time_quantum : remaining_time;
 
-        // Update elapsed time for the current process
-        current_process->elapsed_time += run_time;
+    //     // Update elapsed time for the current process
+    //     current_process->elapsed_time += run_time;
 
-        // Update current time
-        current_time += run_time;
+    //     // Update current time
+    //     current_time += run_time;
 
-        // Print execution of process
-        print_execution(current_process->id, current_time - run_time, current_time);
+    //     // Print execution of process
+    //     print_execution(current_process->id, current_time - run_time, current_time);
 
-        // Check if process is completed
-        if (current_process->elapsed_time == current_process->expected_burst_time) 
-        {
-            num_completed_processes++;
-            calculate_times(current_process, current_time);
-        } 
-        else 
-        {
-            enqueue(ready_queue, current_idx);
-        }
-    }
+    //     // Check if process is completed
+    //     if (current_process->elapsed_time == current_process->expected_burst_time) 
+    //     {
+    //         num_completed_processes++;
+    //         calculate_times(current_process, current_time);
+    //     } 
+    //     else 
+    //     {
+    //         enqueue(ready_queue, current_idx);
+    //     }
+    // }
 
-    // Free memory allocated for the queue
-    free_queue(ready_queue);
+    // // Free memory allocated for the queue
+    // free_queue(ready_queue);
 }
 
 

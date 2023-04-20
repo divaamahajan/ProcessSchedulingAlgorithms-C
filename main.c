@@ -62,6 +62,11 @@ void generate_processes(struct process processes[], int n) {
         // Generate a random expected runtime between MIN_EXPECTED_BURST_TIME and MAX_EXPECTED_BURST_TIME
         processes[i].expected_burst_time = ((double)rand() / RAND_MAX) * (MAX_EXPECTED_BURST_TIME - MIN_EXPECTED_BURST_TIME) + MIN_EXPECTED_BURST_TIME;
         processes[i].priority = rand() % MAX_SRT + 1;  // Generate a random SRT between 1 and MAX_SRT
+    }
+}
+
+void reset_processes(struct process processes[], int n) {
+    for (int i = 0; i < n; i++) {
         processes[i].remaining_time  = processes[i].expected_burst_time ; 
         processes[i].completion_time = 0 ; 
         processes[i].waiting_time    = 0 ; 
@@ -108,10 +113,6 @@ void calculate_statistics(struct process *processes, int n, scheduling_stats_tab
     float avg_throughput = 0.0;
     
     for (int i = 0; i < n; i++) {
-        processes[i].turnaround_time = processes[i].completion_time - processes[i].arrival_time;
-        processes[i].waiting_time = processes[i].turnaround_time - processes[i].expected_burst_time;
-        processes[i].response_time = processes[i].start_time - processes[i].arrival_time;
-
         total_turnaround_time += processes[i].turnaround_time;
         total_waiting_time += processes[i].waiting_time;
         total_response_time += processes[i].response_time;
@@ -123,17 +124,13 @@ void calculate_statistics(struct process *processes, int n, scheduling_stats_tab
     avg_response_time = total_response_time / n;
     avg_throughput = (float)n / total_cpu_time;
 
-    // table->stats[algorithm][round].avg_turnaround_time = avg_turnaround_time;
-    // table->stats[algorithm][round].avg_waiting_time = avg_waiting_time;
-    // table->stats[algorithm][round].avg_response_time = avg_response_time;
-    // table->stats[algorithm][round].avg_throughput = avg_throughput;
     (*table)->stats[algorithm][round].avg_turnaround_time = avg_turnaround_time;
     (*table)->stats[algorithm][round].avg_waiting_time = avg_waiting_time;
     (*table)->stats[algorithm][round].avg_response_time = avg_response_time;
     (*table)->stats[algorithm][round].avg_throughput = avg_throughput;
 
     // Print the calculated statistics
-    printf("Average Waiting Time: %.2f\n", avg_waiting_time);
+    printf("\nAverage Waiting Time: %.2f\n", avg_waiting_time);
     printf("Average Response Time: %.2f\n", avg_response_time);
     printf("Average Turnaround Time: %.2f\n", avg_turnaround_time);
     printf("Average Throughput: %.2f\n", avg_throughput);
@@ -219,6 +216,7 @@ int main() {
         sort_processes_on_arrival(processes, n); // Sort the processes by arrival time
         print_process_table(processes, n); // Print process table
         for (int j = 0; j < NUM_ALGORITHMS; j++) {
+            reset_processes(processes, n);
             algorithm algo = algorithms[j];
             run_algorithm(algo.name, processes, n, algo.run_algo, &stats_table, algo.code, i);
         }
