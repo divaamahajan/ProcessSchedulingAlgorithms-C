@@ -277,14 +277,14 @@ void run_hpf_np(struct process* processes, int n) {
         if (p != NULL) {
             // Set the start time of the process
             p->start_time = current_time;
-
-            print_execution(p->id, p->start_time, current_time);
             
             // Calculate the waiting time, turnaround time, response time, and completion time of the process
             calculate_times(p, current_time);
 
             // Update the current time
             current_time += p->expected_burst_time;
+            
+            print_execution(p->id, p->start_time, current_time);
 
             // Increment the number of completed processes
             num_completed_processes++;
