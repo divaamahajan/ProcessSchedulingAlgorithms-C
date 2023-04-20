@@ -19,6 +19,7 @@ void print_execution(int pid, int start_time, int end_time) {
 
 // Function to calculate waiting time, turnaround time, response time, and completion time
 void calculate_times(struct process* p, int current_time) {
+    p->start_time = current_time;
     p->completion_time = current_time + p->expected_burst_time;
     p->turnaround_time = p->completion_time - p->arrival_time;
     p->waiting_time = p->turnaround_time - p->expected_burst_time;
