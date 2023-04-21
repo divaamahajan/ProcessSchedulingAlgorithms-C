@@ -342,6 +342,10 @@ void run_hpf_p(struct process *processes, int n){
     calculate_statistics_pq(final_queue_3, 3);
     calculate_statistics_pq(final_queue_4, 4);
     // Free the memory used by the process queues
+    free_hpf_queue(final_queue_1);
+    free_hpf_queue(final_queue_2);
+    free_hpf_queue(final_queue_3);
+    free_hpf_queue(final_queue_4);
     free_hpf_queue(priority_queue_1);
     free_hpf_queue(priority_queue_2);
     free_hpf_queue(priority_queue_3);
