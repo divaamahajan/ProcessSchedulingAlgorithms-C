@@ -1,3 +1,6 @@
 a.out
 scratch.c
 scratch2.c
+/.vscode/
+/cmake-build-debug/
+/.idea/

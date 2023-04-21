@@ -1,19 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "process.h"
 
-struct process {
-    int id                      ;                 
-    int arrival_time            ;              
-    int expected_burst_time     ;            
-    int remaining_time          ;             
-    int priority                ;
-    int completion_time         ;
-    int waiting_time            ;
-    int turnaround_time         ;
-    int response_time           ;
-    int start_time              ;
-};
 
 // Define the struct for the queue node
 struct queue_node {

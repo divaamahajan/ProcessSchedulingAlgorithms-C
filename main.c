@@ -3,6 +3,7 @@
 #include <string.h>
 #include "scheduling_algorithms.c"
 
+
 #define NUM_ROUNDS 5
 #define MAX_PROCESSES 100
 #define MAX_QUANTA 100.0f
@@ -68,11 +69,11 @@ void generate_processes(struct process processes[], int n) {
 void reset_processes(struct process processes[], int n) {
     for (int i = 0; i < n; i++) {
         processes[i].remaining_time  = processes[i].expected_burst_time ; 
-        processes[i].completion_time = 0 ; 
-        processes[i].waiting_time    = 0 ; 
-        processes[i].turnaround_time = 0 ; 
-        processes[i].response_time   = 0 ; 
-        processes[i].start_time      = 0 ; 
+        processes[i].completion_time = 0 ;
+        processes[i].waiting_time    = 0 ;
+        processes[i].turnaround_time = 0 ;
+        processes[i].response_time   = 0 ;
+        processes[i].start_time      = -1 ;
     }
 }
 
