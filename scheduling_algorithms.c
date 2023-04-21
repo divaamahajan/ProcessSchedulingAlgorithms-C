@@ -9,6 +9,7 @@
 void print_execution(int pid, int start_time, int end_time) {
     char str[12]; // increase buffer size to 12
     if (pid < 1) {
+        return;
         snprintf(str, sizeof(str), "-");
     } else {
         snprintf(str, sizeof(str), "P%d", pid);
@@ -301,6 +302,10 @@ void run_hpf_np(struct process* processes, int n) {
             current_time++;
     }
     }
+calculate_statistics_pq(process_queue_1, 1);
+calculate_statistics_pq(process_queue_2, 2);
+calculate_statistics_pq(process_queue_3, 3);
+calculate_statistics_pq(process_queue_4, 4);
 // Free the memory used by the process queues
 free_queue(process_queue_1);
 free_queue(process_queue_2);
