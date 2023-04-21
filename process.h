@@ -16,6 +16,7 @@ struct process {
     int turnaround_time         ;
     int response_time           ;
     int start_time              ;
+    int elapsed_time            ;
 };
 
 //typedef struct process process;

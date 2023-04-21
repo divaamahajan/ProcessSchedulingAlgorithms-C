@@ -74,6 +74,7 @@ void reset_processes(struct process processes[], int n) {
         processes[i].turnaround_time = 0 ;
         processes[i].response_time   = 0 ;
         processes[i].start_time      = -1 ;
+        processes[i].elapsed_time    = 0 ;
     }
 }
 
