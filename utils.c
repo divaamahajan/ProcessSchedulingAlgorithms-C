@@ -27,7 +27,8 @@ int compare_priority(struct process* p1 , struct process* p2) {
 void print_exec(int id) {
     char str1[12]; // increase buffer size to 12
     if (id < 0) {
-        printf("-\t");
+        return;
+//        printf("-\t");
     } else {
         printf("P%d\t", id);
     }

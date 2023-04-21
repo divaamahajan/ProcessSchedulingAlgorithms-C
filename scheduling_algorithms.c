@@ -83,7 +83,6 @@ void run_sjf(struct process *processes, int n) {
                 if (p.expected_burst_time < 1){continue;}            
                 enqueue_sorted_burst_time(ready_queue, processes, i, compare_expected_burst_time);     
                 next_process_idx = i+1;
-
             }
         }
 
@@ -277,19 +276,15 @@ void run_hpf_np(struct process* processes, int n) {
         if (!is_empty(process_queue_1)) {
             int process_idx = dequeue(process_queue_1);
             p = &processes[process_idx];
-            enqueue_hpf(final_queue_1, p);
         } else if (!is_empty(process_queue_2)) {
             int process_idx = dequeue(process_queue_2);
             p = &processes[process_idx];
-            enqueue_hpf(final_queue_2, p);
         } else if (!is_empty(process_queue_3)) {
             int process_idx = dequeue(process_queue_3);
             p = &processes[process_idx];
-            enqueue_hpf(final_queue_3, p);
         } else if (!is_empty(process_queue_4)) {
             int process_idx = dequeue(process_queue_4);
             p = &processes[process_idx];
-            enqueue_hpf(final_queue_4, p);
         }
 
         // If a process was selected, run it
@@ -299,7 +294,20 @@ void run_hpf_np(struct process* processes, int n) {
             
             // Calculate the waiting time, turnaround time, response time, and completion time of the process
             calculate_times(p, current_time);
-
+            switch (p->priority) {
+                case 1:
+                    enqueue_hpf(final_queue_1, p);
+                    break;
+                case 2:
+                    enqueue_hpf(final_queue_2, p);
+                    break;
+                case 3:
+                    enqueue_hpf(final_queue_3, p);
+                    break;
+                case 4:
+                    enqueue_hpf(final_queue_4, p);
+                    break;
+            }
             // Update the current time
             current_time += p->expected_burst_time;
             
@@ -322,6 +330,10 @@ free_queue(process_queue_1);
 free_queue(process_queue_2);
 free_queue(process_queue_3);
 free_queue(process_queue_4);
+free_hpf_queue(final_queue_1);
+free_hpf_queue(final_queue_2);
+free_hpf_queue(final_queue_3);
+free_hpf_queue(final_queue_4);
 
 }
 
