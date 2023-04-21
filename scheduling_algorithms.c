@@ -229,6 +229,13 @@ void run_hpf_np(struct process* processes, int n) {
     struct queue* process_queue_2 = create_queue();
     struct queue* process_queue_3 = create_queue();
     struct queue* process_queue_4 = create_queue();
+
+    struct hpf_queue *final_queue_1 = create_hpf_queue();
+    struct hpf_queue *final_queue_2 = create_hpf_queue();
+    struct hpf_queue *final_queue_3 = create_hpf_queue();
+    struct hpf_queue *final_queue_4 = create_hpf_queue();
+
+
     int current_time = 0;
     int num_completed_processes = 0;
     int next_process_idx = 0;
@@ -270,15 +277,19 @@ void run_hpf_np(struct process* processes, int n) {
         if (!is_empty(process_queue_1)) {
             int process_idx = dequeue(process_queue_1);
             p = &processes[process_idx];
+            enqueue_hpf(final_queue_1, p);
         } else if (!is_empty(process_queue_2)) {
             int process_idx = dequeue(process_queue_2);
             p = &processes[process_idx];
+            enqueue_hpf(final_queue_2, p);
         } else if (!is_empty(process_queue_3)) {
             int process_idx = dequeue(process_queue_3);
             p = &processes[process_idx];
+            enqueue_hpf(final_queue_3, p);
         } else if (!is_empty(process_queue_4)) {
             int process_idx = dequeue(process_queue_4);
             p = &processes[process_idx];
+            enqueue_hpf(final_queue_4, p);
         }
 
         // If a process was selected, run it
@@ -302,10 +313,10 @@ void run_hpf_np(struct process* processes, int n) {
             current_time++;
     }
     }
-calculate_statistics_pq(process_queue_1, 1);
-calculate_statistics_pq(process_queue_2, 2);
-calculate_statistics_pq(process_queue_3, 3);
-calculate_statistics_pq(process_queue_4, 4);
+calculate_statistics_pq(final_queue_1, 1);
+calculate_statistics_pq(final_queue_2, 2);
+calculate_statistics_pq(final_queue_3, 3);
+calculate_statistics_pq(final_queue_4, 4);
 // Free the memory used by the process queues
 free_queue(process_queue_1);
 free_queue(process_queue_2);
