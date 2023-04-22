@@ -1,34 +1,26 @@
+#include <stdio.h>
+#include <limits.h>
+#include "process.h"
 
-// C++ program to implement Shortest Remaining Time First
-// Shortest Remaining Time First (SRTF)
-
-#include <iostream>
-using namespace std;
-
-struct Process
-{
-  int pid; // Process ID
-  int bt;  // Burst Time
-  int art; // Arrival Time
-};
-
-// Function to find the waiting time for all
-// processes
-void findWaitingTime(Process proc[], int n,
-                     int wt[])
+/**
+ * Calculates the waiting time for each process in the given array.
+ *
+ * @param proc An array of process structs representing the processes to calculate waiting time for.
+ * @param n The number of processes in the array.
+ * @param wt An array to store the calculated waiting times in. Must have size at least n.
+ */
+void findWaitingTime(struct process proc[], int n, int wt[])
 {
   int rt[n];
 
   // Copy the burst time into rt[]
   for (int i = 0; i < n; i++)
-    rt[i] = proc[i].bt;
+    rt[i] = proc[i].expected_burst_time;
 
   int complete = 0, t = 0, minm = INT_MAX;
   int shortest = 0, finish_time;
-  bool check = false;
+  int check = 0;
 
-  // Process until all processes gets
-  // completed
   while (complete != n)
   {
 
@@ -38,16 +30,16 @@ void findWaitingTime(Process proc[], int n,
     // current time`
     for (int j = 0; j < n; j++)
     {
-      if ((proc[j].art <= t) &&
+      if ((proc[j].arrival_time <= t) &&
           (rt[j] < minm) && rt[j] > 0)
       {
         minm = rt[j];
         shortest = j;
-        check = true;
+        check = 1;
       }
     }
 
-    if (check == false)
+    if (check == 0)
     {
       t++;
       continue;
@@ -68,7 +60,7 @@ void findWaitingTime(Process proc[], int n,
 
       // Increment complete
       complete++;
-      check = false;
+      check = 0;
 
       // Find finish time of current
       // process
@@ -76,8 +68,8 @@ void findWaitingTime(Process proc[], int n,
 
       // Calculate waiting time
       wt[shortest] = finish_time -
-                     proc[shortest].bt -
-                     proc[shortest].art;
+                     proc[shortest].expected_burst_time -
+                     proc[shortest].arrival_time;
 
       if (wt[shortest] < 0)
         wt[shortest] = 0;
@@ -87,21 +79,33 @@ void findWaitingTime(Process proc[], int n,
   }
 }
 
-// Function to calculate turn around time
-void findTurnAroundTime(Process proc[], int n,
-                        int wt[], int tat[])
+/**
+ * Calculates the turn-around time for each process in the given array.
+ *
+ * @param proc An array of process structs representing the processes to calculate turn-around time for.
+ * @param n The number of processes in the array.
+ * @param wt An array of the waiting times for each process, as previously calculated by `findWaitingTime()`.
+ * @param tat An array to store the calculated turn-around times in. Must have size at least n.
+ */
+void findTurnAroundTime(struct process proc[], int n, int wt[], int tat[])
 {
-  // calculating turnaround time by adding
-  // bt[i] + wt[i]
   for (int i = 0; i < n; i++)
-    tat[i] = proc[i].bt + wt[i];
+    tat[i] = proc[i].expected_burst_time + wt[i];
 }
 
-// Function to calculate average time
-void findavgTime(Process proc[], int n)
+/**
+ * Calculates the average waiting time and average turn-around time for the given processes.
+ *
+ * @param proc An array of process structs representing the processes to calculate average times for.
+ * @param n The number of processes in the array.
+ * @param wt An array of the waiting times for each process, as previously calculated by `findWaitingTime()`.
+ * @param tat An array of the turn-around times for each process, as previously calculated by `findTurnAroundTime()`.
+ * @param avg_wt A pointer to store the calculated average waiting time.
+ * @param avg_tat A pointer to store the calculated average turn-around time.
+ */
+void findavgTime(struct process proc[], int n)
 {
-  int wt[n], tat[n], total_wt = 0,
-                     total_tat = 0;
+  int wt[n], tat[n], total_wt = 0, total_tat = 0;
 
   // Function to find waiting time of all
   // processes
@@ -113,10 +117,7 @@ void findavgTime(Process proc[], int n)
 
   // Display processes along with all
   // details
-  cout << " P\t\t"
-       << "BT\t\t"
-       << "WT\t\t"
-       << "TAT\t\t\n";
+  printf(" P\tBT\tWT\tTAT\n");
 
   // Calculate total waiting time and
   // total turnaround time
@@ -124,21 +125,23 @@ void findavgTime(Process proc[], int n)
   {
     total_wt = total_wt + wt[i];
     total_tat = total_tat + tat[i];
-    cout << " " << proc[i].pid << "\t\t"
-         << proc[i].bt << "\t\t " << wt[i]
-         << "\t\t " << tat[i] << endl;
+    printf(" %d\t%d\t%d\t%d\n", proc[i].id,
+           proc[i].expected_burst_time, wt[i], tat[i]);
   }
 
-  cout << "\nAverage waiting time = "
-       << (float)total_wt / (float)n;
-  cout << "\nAverage turn around time = "
-       << (float)total_tat / (float)n;
+  printf("\nAverage waiting time = %f", (float)total_wt / (float)n);
+  printf("\nAverage turn around time = %f", (float)total_tat / (float)n);
 }
 
 // Driver code
 int main()
 {
-  Process proc[] = {{1, 6, 2}, {2, 2, 5}, {3, 8, 1}, {4, 3, 0}, {5, 4, 4}};
+  struct process proc[] = {
+      {1, 0, 6, 6, 3, 0, 0, 0, 0, 0, 0},
+      {2, 5, 2, 2, 1, 0, 0, 0, 0, 0, 0},
+      {3, 1, 8, 8, 2, 0, 0, 0, 0, 0, 0},
+      {4, 0, 3, 3, 4, 0, 0, 0, 0, 0, 0},
+      {5, 4, 4, 4, 5, 0, 0, 0, 0, 0, 0}};
   int n = sizeof(proc) / sizeof(proc[0]);
 
   findavgTime(proc, n);
