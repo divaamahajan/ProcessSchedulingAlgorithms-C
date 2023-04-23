@@ -10,8 +10,12 @@
  */
 void findWaitingTime(struct process proc[], int n)
 {
+  int started[n];
   for (int i = 0; i < n; i++)
+  {
+    started[i] = 0;
     proc[i].remaining_time = proc[i].expected_burst_time;
+  }
 
   int complete = 0, t = 0, minm = INT_MAX;
   int shortest = 0, finish_time;
@@ -26,12 +30,16 @@ void findWaitingTime(struct process proc[], int n)
     // current time`
     for (int j = 0; j < n; j++)
     {
-      if ((proc[j].arrival_time <= t) &&
-          (proc[j].remaining_time < minm) && proc[j].remaining_time > 0)
+      if ((proc[j].arrival_time <= t) && (proc[j].remaining_time < minm) && proc[j].remaining_time > 0)
       {
         minm = proc[j].remaining_time;
         shortest = j;
         check = 1;
+        if (started[j] != 1)
+        {
+          started[j] = 1;
+          proc[j].start_time = t;
+        }
       }
     }
 
@@ -71,6 +79,7 @@ void findWaitingTime(struct process proc[], int n)
 
       if (proc[shortest].waiting_time < 0)
         proc[shortest].waiting_time = 0;
+      proc[shortest].response_time = proc[shortest].start_time - proc[shortest].arrival_time;
     }
     // Increment time
     t++;
@@ -117,8 +126,8 @@ void findavgTime(struct process proc[], int n)
   // {
   //   total_wt = total_wt + proc[i].waiting_time;
   //   total_tat = total_tat + proc[i].turnaround_time;
-  //   printf(" %d\t%d\t%d\t%d\n", proc[i].id,
-  //          proc[i].expected_burst_time, proc[i].waiting_time, proc[i].turnaround_time);
+  //   printf(" %d\t%d\t%d\t%d\t%d\t%d\n", proc[i].id,
+  //          proc[i].expected_burst_time, proc[i].waiting_time, proc[i].turnaround_time, proc[i].start_time, proc[i].response_time);
   // }
 
   // printf("\nAverage waiting time = %f", (float)total_wt / (float)n);
