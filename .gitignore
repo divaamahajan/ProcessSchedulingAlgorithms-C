@@ -4,3 +4,4 @@ scratch2.c
 /.vscode/
 /cmake-build-debug/
 /.idea/
+build/
