@@ -46,6 +46,65 @@ int compare_expected_burst_time(struct process* processes, int idx1, struct proc
 void run_fcfs(struct process *processes, int n) {
     // Run the First-Come First-Served scheduling algorithm
     // Code for FCFS
+    
+    // Create a queue to hold the ready processes
+    struct queue* ready_queue = create_queue();
+
+    // Initialize the current time and the index of the next process to execute
+     int current_time = 0;
+    int num_completed_processes = 0;
+    int next_process_idx = 0;    
+
+    // Check if there are any processes to schedule
+    if (n == 0) {
+        printf("No processes to schedule.\n");
+        return;
+    }
+    
+    // Check if the first process has arrived
+    if (processes[0].arrival_time > current_time){
+        print_execution(0, current_time, processes[0].arrival_time );
+        current_time = processes[0].arrival_time;
+    }
+    
+    // Loop until all processes have been executed
+    while (next_process_idx < n) {
+        // Add any arrived processes to the ready queue
+        for (int i = next_process_idx; i < n; i++) {
+            struct process p = processes[i];
+            if (p.arrival_time <= current_time && p.expected_burst_time > 0 && !p.completion_time) {
+                enqueue(ready_queue, i);
+                next_process_idx = i + 1;
+            } else {
+                break;
+            }
+        }
+
+    // Check if there are any processes in the ready queue
+        if (!is_empty(ready_queue)) {
+            // Get the next process from the ready queue
+            int current_idx = dequeue(ready_queue);
+            struct process *current_process_ptr = &processes[current_idx];
+            
+            // Update the process's start time, completion time, and other times
+            current_process_ptr->start_time = current_time;
+            current_process_ptr->completion_time = current_time + current_process_ptr->expected_burst_time;
+            calculate_times(current_process_ptr, current_time);
+
+    // Print the process execution
+            print_execution((int)current_process_ptr->id, (int)current_process_ptr->start_time, (int)current_process_ptr->completion_time);
+            
+            // Update the current time
+            current_time = current_process_ptr->completion_time;
+        } else {
+            // If the ready queue is empty, move the current time to the arrival time of the next process
+            print_execution(0, current_time, processes[next_process_idx].arrival_time);
+            current_time = processes[next_process_idx].arrival_time;
+        }
+    }
+    
+    // Free memory allocated for the queue
+    free_queue(ready_queue);
 }
 
 void run_sjf(struct process *processes, int n) {
