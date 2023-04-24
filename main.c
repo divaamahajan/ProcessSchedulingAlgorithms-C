@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "scheduling_algorithms.c"
-#include "utils.c"
+#include "utils.h"
 
 #define NUM_ROUNDS 5
 #define MAX_PROCESSES 100

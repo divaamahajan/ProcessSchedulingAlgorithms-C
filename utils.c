@@ -30,7 +30,7 @@ void print_exec(int id) {
         return;
 //        printf("-\t");
     } else {
-        printf("P%d\t", id);
+        printf("P%d ", id);
     }
 }
 
